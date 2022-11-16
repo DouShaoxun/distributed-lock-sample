@@ -1,0 +1,8 @@
+server:
+  port: 7900
+spring:
+  redis:
+    database: 3
+    host: localhost
+    port: 6379
+#    password: redispwd...

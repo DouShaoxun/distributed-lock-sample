@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    scan:当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+    scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+    debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+ -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!--设置服务名-->
+    <property name="APP_NAME" value="distributed-lock-sample"/>
+    <!--log 目录-->
+    <property name="LOG_HOME" value="logs"/>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--格式化输出：
+            %d表示日期
+            %thread表示线程名
+            %-5level：级别从左显示5个字符宽度
+            %msg：日志消息，%n是换行符
+            %M    是方法名
+            %line 是行号
+            也可以再application.yml/application.properties中通过配置id方式配置日志
+            logging.pattern.console=%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{10}.%M [%line]) - %cyan(%msg%n)
+            logging.charset.console=UTF-8
+             -->
+            <pattern>
+                %yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) %highlight(%-5level) %green([%thread]) %boldMagenta(%logger{20}.%M [%line]) - %cyan(%msg%n)
+            </pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集，防止中文乱码 -->
+        </encoder>
+    </appender>
+
+    <!-- 文件输出-->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 按时间分割 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                <!--
+                aux 的模式配置符，它的意思是说，可以在 fileNamePattern 配置中添加多个 %d 的日期符号，但是只能有一个是主要的，其它的只能做为辅助（auxiliary）
+                在 RollingCalendar 类中，日志的文件滚动方式就是根据主 %d 那个日期判断的。
+                -->
+                <!-- 后缀以".zip"或".gz"结尾，则开启日志文件压缩 -->
+                <!-- 文件的路径与名称，{yyyyMMdd-HH} 精确到小时，则按小时分割保存 -->
+                ${LOG_HOME}/${APP_NAME}/%d{yyyy,aux}/%d{MM,aux}/%d{dd,aux}/${APP_NAME}-%d{yyyy-MM-dd-HH}.log.zip
+            </fileNamePattern>
+
+            <!-- 如果当前是按小时保存，则保存 2400 小时（= 100 天）内的日志 -->
+            <MaxHistory>2400</MaxHistory>
+
+            <!-- 日志文件保留的总的最大大小-->
+            <totalSizeCap>20GB</totalSizeCap>
+
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset> <!-- 此处设置字符集，防止中文乱码 -->
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{20}.%M [%line] - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+
+    <!-- 异步输出 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 丢弃日志临界值。默认20%，队列容量小于临界值则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 队列大小。默认值为256 -->
+        <queueSize>1024</queueSize>
+        <!-- 队列满时不阻塞。默认false，线程阻塞 -->
+        <neverBlock>true</neverBlock>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="FILE"/>
+    </appender>
+
+
+
+
+    <!-- 默认是DEBUG-->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </root>
+
+    <!--
+    控制org.springframework包的日志打印，打印级别为“INFO”；
+
+    additivity属性为false，表示此loger的打印信息不再向上级传递，
+
+    指定了名字为“CONSOLE”和“ASYNC_FILE”的appender。
+
+    如果在 application.yml 中指定了级别 则xml配置中的被覆盖
+    -->
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+
+    <!--
+    控制cn.cruder包的日志打印，打印级别为“DEBUG”；
+
+    additivity属性为false，表示此loger的打印信息不再向上级传递，
+
+    指定了名字为“CONSOLE”和“ASYNC_FILE”的appender。
+
+    如果在 application.yml 中指定了级别 则xml配置中的被覆盖
+    -->
+    <logger name="cn.cruder" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+</configuration>
