@@ -41,7 +41,7 @@
         <dependency>
             <groupId>cn.cruder.dousx</groupId>
             <artifactId>redis-distributed-lock-starter</artifactId>
-            <version>1.1.20221126-15</version>
+            <version>1.1.20221126-17</version>
         </dependency>
     </dependencies>
 
