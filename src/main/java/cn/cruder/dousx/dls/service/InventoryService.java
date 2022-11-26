@@ -1,22 +1,29 @@
 package cn.cruder.dousx.dls.service;
 
 import cn.cruder.dousx.dls.dto.ModifyParam;
-import cn.cruder.dousx.rdl.annotation.DistributedLock;
+import cn.cruder.dousx.dls.repository.InventoryRepository;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
  * @author dousx
  */
 @Service
+@AllArgsConstructor
+@Slf4j
 public class InventoryService {
-    private static Integer COUNT = 10;
+    private final InventoryRepository inventoryRepository;
 
     /**
-     * 修改库存
+     * 下单
      */
-    @DistributedLock(lockKey = "#modify.getOrderId()")
-    //@DistributedLock(lockKey = "__aa12123")
-    public void modifyInventory(ModifyParam modify) {
-        COUNT += modify.getModify();
+    public void placeOrder(ModifyParam modify) {
+        // 其他业务
+        inventoryRepository.modifyInventory(modify);
+        log.info("GoodsId:{} Inventory:{}", modify.getGoodsId(), inventoryRepository.getInventory(modify.getGoodsId()));
+        // 其他业务
     }
+
+
 }

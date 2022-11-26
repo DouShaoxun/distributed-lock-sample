@@ -2,11 +2,11 @@ package cn.cruder.dousx.dls.dto;
 
 public class ModifyParam {
     Integer modify;
-    private String orderId;
+    private String goodsId;
 
-    public ModifyParam(Integer modify, String orderId) {
+    public ModifyParam(Integer modify, String goodsId) {
         this.modify = modify;
-        this.orderId = orderId;
+        this.goodsId = goodsId;
     }
 
     public Integer getModify() {
@@ -17,11 +17,11 @@ public class ModifyParam {
         this.modify = modify;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getGoodsId() {
+        return goodsId;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
     }
 }
